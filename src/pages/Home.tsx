@@ -375,9 +375,14 @@ export default function Home() {
 
       {/* Footer */}
       <footer style={{ textAlign: 'center', padding: '2rem 0', marginTop: 'auto', borderTop: '1px solid var(--glass-border)', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-        {settings.footer_address && <p style={{ marginBottom: '1rem', fontSize: '1rem', color: '#fff' }}>{settings.footer_address}</p>}
-        <p>
-          design by <a href="https://ariftirtana.my.id" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-yellow)', textDecoration: 'none', fontWeight: 'bold' }}>arif tirtana</a>
+        {settings.footer_address && (
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem', color: '#fff', fontSize: '1rem', padding: '0 1rem' }}>
+            <MapPin size={20} color="var(--accent-yellow)" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <span style={{ whiteSpace: 'pre-wrap', textAlign: 'left', lineHeight: '1.5' }}>{settings.footer_address}</span>
+          </div>
+        )}
+        <p style={{ margin: 0 }}>
+          design by <a href={settings.footer_designer_link || "https://ariftirtana.my.id"} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-yellow)', textDecoration: 'none', fontWeight: 'bold' }}>{settings.footer_designer_name || "arif tirtana"}</a>
         </p>
       </footer>
     </div>

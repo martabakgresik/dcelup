@@ -75,7 +75,7 @@ export default function SettingsEditor() {
         </div>
       )}
       
-      <form onSubmit={handleSaveSettings} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+      <form onSubmit={handleSaveSettings} className="settings-grid">
         
         {/* Card Informasi */}
         <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -97,13 +97,35 @@ export default function SettingsEditor() {
           </div>
 
           <div className="form-group">
+            <label>Nomor WhatsApp</label>
+            <input className="glass-input" name="whatsapp_number" value={settings.whatsapp_number || ''} onChange={handleChange} />
+          </div>
+        </div>
+
+        {/* Card Footer */}
+        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <h3 style={{ margin: 0, borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem' }}>Pengaturan Footer</h3>
+          
+          <div className="form-group">
             <label>Alamat Footer</label>
-            <input className="glass-input" name="footer_address" value={settings.footer_address || ''} onChange={handleChange} />
+            <textarea 
+              className="glass-input" 
+              name="footer_address" 
+              value={settings.footer_address || ''} 
+              onChange={handleChange} 
+              rows={3}
+              style={{ resize: 'vertical' }}
+            />
           </div>
 
           <div className="form-group">
-            <label>Nomor WhatsApp</label>
-            <input className="glass-input" name="whatsapp_number" value={settings.whatsapp_number || ''} onChange={handleChange} />
+            <label>Teks "Design By"</label>
+            <input className="glass-input" name="footer_designer_name" value={settings.footer_designer_name || ''} onChange={handleChange} placeholder="Contoh: arif tirtana" />
+          </div>
+
+          <div className="form-group">
+            <label>Link "Design By"</label>
+            <input className="glass-input" name="footer_designer_link" value={settings.footer_designer_link || ''} onChange={handleChange} placeholder="Contoh: https://ariftirtana.my.id" />
           </div>
         </div>
 

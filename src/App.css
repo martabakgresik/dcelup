@@ -288,6 +288,7 @@ body, html {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid var(--glass-border);
+  white-space: nowrap;
 }
 
 .admin-table th {
@@ -508,9 +509,20 @@ body, html {
     width: 250px;
     z-index: 1000;
   }
+  .admin-layout {
+    flex-direction: column;
+  }
+
   .admin-content {
     margin-left: 0;
-    padding: 1.5rem;
+    padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  
+  .settings-grid {
+    grid-template-columns: 1fr !important;
   }
 
   .hero-title {
@@ -654,6 +666,12 @@ body, html {
 
 .hidden-desktop {
   display: none;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
 }
 
 @media (max-width: 768px) {
