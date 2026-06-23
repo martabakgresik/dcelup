@@ -1,8 +1,8 @@
 :root {
   --primary-red: #990000;
   --dark-red: #5c0000;
-  --accent-yellow: #FFD700;
-  --accent-yellow-hover: #F2C900;
+  --accent-yellow: #eadd02; /* Color synced with dcelup.jpg logo */
+  --accent-yellow-hover: #d6c802;
   --text-main: #ffffff;
   --text-muted: #e2e8f0;
   --glass-bg: rgba(255, 255, 255, 0.05);
