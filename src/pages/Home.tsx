@@ -375,6 +375,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer style={{ textAlign: 'center', padding: '2rem 0', marginTop: 'auto', borderTop: '1px solid var(--glass-border)', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+        {settings.footer_address && <p style={{ marginBottom: '1rem', fontSize: '1rem', color: '#fff' }}>{settings.footer_address}</p>}
         <p>
           design by <a href="https://ariftirtana.my.id" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-yellow)', textDecoration: 'none', fontWeight: 'bold' }}>arif tirtana</a>
         </p>
