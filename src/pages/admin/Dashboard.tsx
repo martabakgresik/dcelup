@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { LayoutList, Tag, Users, TrendingUp } from 'lucide-react'
+import { LayoutList, Tag, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function Dashboard() {
