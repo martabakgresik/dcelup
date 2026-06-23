@@ -142,7 +142,7 @@ body, html {
   color: var(--text-main);
   margin-bottom: 1.5rem;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 8px;
 }
 
 .hero-slogan {
