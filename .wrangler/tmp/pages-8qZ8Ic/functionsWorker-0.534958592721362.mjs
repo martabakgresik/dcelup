@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// ../.wrangler/tmp/bundle-AvfecZ/checked-fetch.js
+// ../.wrangler/tmp/bundle-acMtpE/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -130,8 +130,8 @@ var onRequestPost4 = /* @__PURE__ */ __name(async (context) => {
   const body = await context.request.json();
   try {
     await context.env.DB.prepare(
-      "INSERT INTO promos (title, description, discount_value, valid_until, is_active) VALUES (?, ?, ?, ?, ?)"
-    ).bind(body.title, body.description, body.discount_value, body.valid_until, body.is_active ? 1 : 0).run();
+      "INSERT INTO promos (title, description, discount_value, valid_until, is_active, discount_type) VALUES (?, ?, ?, ?, ?, ?)"
+    ).bind(body.title, body.description, body.discount_value, body.valid_until, body.is_active ? 1 : 0, body.discount_type || "nominal").run();
     return Response.json({ success: true });
   } catch (err) {
     return Response.json({ success: false, error: err.message }, { status: 500 });
@@ -760,7 +760,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// ../.wrangler/tmp/bundle-AvfecZ/middleware-insertion-facade.js
+// ../.wrangler/tmp/bundle-acMtpE/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -792,7 +792,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// ../.wrangler/tmp/bundle-AvfecZ/middleware-loader.entry.ts
+// ../.wrangler/tmp/bundle-acMtpE/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

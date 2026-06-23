@@ -15,6 +15,7 @@ interface PromoItem {
   title: string;
   description: string;
   discount_value: number;
+  discount_type: string;
   valid_until: string;
   is_active: number;
 }
@@ -163,16 +164,21 @@ export default function Home() {
       {/* Promos Section */}
       {promos.length > 0 && (
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2.5rem' }}
         >
           {promos.map(promo => (
-            <div key={promo.id} className="promo-banner">
-              <div className="promo-icon"><Tag size={32} /></div>
+            <div key={promo.id} className="promo-banner" style={{ background: 'linear-gradient(135deg, rgba(234, 221, 2, 0.95) 0%, rgba(214, 200, 2, 0.95) 100%)', color: '#1a1a1a', borderRadius: '16px', padding: '1.2rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1.2rem', boxShadow: '0 10px 25px rgba(234, 221, 2, 0.2)', border: '1px solid rgba(255,255,255,0.4)' }}>
+              <div className="promo-icon" style={{ background: '#fff', borderRadius: '50%', padding: '0.8rem', color: '#1a1a1a', boxShadow: '0 4px 10px rgba(0,0,0,0.1)' }}>
+                <Tag size={28} />
+              </div>
               <div className="promo-content">
-                <h3>{promo.title}</h3>
-                <p>{promo.description} | Hemat Rp {promo.discount_value.toLocaleString('id-ID')} | Berlaku s.d {promo.valid_until}</p>
+                <h3 style={{ margin: '0 0 0.4rem 0', fontSize: '1.3rem', fontWeight: 800 }}>{promo.title}</h3>
+                <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, opacity: 0.85 }}>
+                  {promo.description} | {promo.discount_type === 'percentage' ? `Diskon ${promo.discount_value}%` : `Hemat Rp ${promo.discount_value.toLocaleString('id-ID')}`} | Berlaku s.d {promo.valid_until}
+                </p>
               </div>
             </div>
           ))}

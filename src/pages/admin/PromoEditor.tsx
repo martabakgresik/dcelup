@@ -5,7 +5,7 @@ export default function PromoEditor() {
   const [promos, setPromos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const [formData, setFormData] = useState({ title: '', description: '', discount_value: '', valid_until: '' })
+  const [formData, setFormData] = useState({ title: '', description: '', discount_value: '', discount_type: 'nominal', valid_until: '' })
   
   const token = localStorage.getItem('admin_token')
 
@@ -37,6 +37,7 @@ export default function PromoEditor() {
           title: formData.title,
           description: formData.description,
           discount_value: parseInt(formData.discount_value),
+          discount_type: formData.discount_type,
           valid_until: formData.valid_until,
           is_active: true
         })
@@ -44,7 +45,7 @@ export default function PromoEditor() {
       const data = await res.json()
       if (data.success) {
         setIsEditing(false)
-        setFormData({ title: '', description: '', discount_value: '', valid_until: '' })
+        setFormData({ title: '', description: '', discount_value: '', discount_type: 'nominal', valid_until: '' })
         fetchPromos()
       } else {
         alert(data.error)
@@ -107,11 +108,22 @@ export default function PromoEditor() {
               />
             </div>
             <div className="form-group">
-              <label>Nilai Diskon (Rp)</label>
+              <label>Tipe Diskon</label>
+              <select
+                className="glass-input"
+                value={formData.discount_type}
+                onChange={e => setFormData({...formData, discount_type: e.target.value})}
+              >
+                <option value="nominal" style={{ color: '#000' }}>Nominal (Rp)</option>
+                <option value="percentage" style={{ color: '#000' }}>Persentase (%)</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Nilai Diskon</label>
               <input 
                 type="number" 
                 className="glass-input" 
-                placeholder="Misal: 5000" 
+                placeholder={formData.discount_type === 'nominal' ? "Misal: 5000" : "Misal: 20"} 
                 value={formData.discount_value} 
                 onChange={e => setFormData({...formData, discount_value: e.target.value})} 
                 required 
@@ -163,7 +175,11 @@ export default function PromoEditor() {
                 <tr key={promo.id}>
                   <td>{promo.id}</td>
                   <td style={{ fontWeight: 600 }}>{promo.title}</td>
-                  <td style={{ color: 'var(--accent-yellow)' }}>Rp. {promo.discount_value.toLocaleString('id-ID')}</td>
+                  <td style={{ color: 'var(--accent-yellow)' }}>
+                    {promo.discount_type === 'percentage' 
+                      ? `${promo.discount_value}%` 
+                      : `Rp. ${promo.discount_value.toLocaleString('id-ID')}`}
+                  </td>
                   <td>{promo.valid_until}</td>
                   <td>
                     <div className="action-buttons">

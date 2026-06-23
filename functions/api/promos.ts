@@ -16,8 +16,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const body = await context.request.json<any>();
   try {
     await context.env.DB.prepare(
-      "INSERT INTO promos (title, description, discount_value, valid_until, is_active) VALUES (?, ?, ?, ?, ?)"
-    ).bind(body.title, body.description, body.discount_value, body.valid_until, body.is_active ? 1 : 0).run();
+      "INSERT INTO promos (title, description, discount_value, valid_until, is_active, discount_type) VALUES (?, ?, ?, ?, ?, ?)"
+    ).bind(body.title, body.description, body.discount_value, body.valid_until, body.is_active ? 1 : 0, body.discount_type || 'nominal').run();
     return Response.json({ success: true });
   } catch (err: any) {
     return Response.json({ success: false, error: err.message }, { status: 500 });
