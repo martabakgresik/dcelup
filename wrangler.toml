@@ -1,0 +1,18 @@
+name = "dcelup"
+compatibility_date = "2024-03-29"
+
+# Tell Cloudflare to serve static files from the 'dist' directory built by Vite
+pages_build_output_dir = "dist"
+
+# Configure D1 database binding
+# (Replace database_id with your actual D1 ID later)
+[[d1_databases]]
+binding = "DB"
+database_name = "dcelup-db"
+database_id = "5eb4602a-20bd-4d91-ad8c-061db2d92344"
+
+# Configure R2 storage binding
+# (Replace bucket_name with your actual R2 bucket name later)
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "dcelup-storage"
