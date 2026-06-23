@@ -245,7 +245,6 @@ export default function Home() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         className="footer"
-        style={{ paddingBottom: totalCartItems > 0 ? '6rem' : '2rem' }} // Extra space so footer is not hidden by cart bar
       >
         <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
           <MapPin size={16} color="var(--accent-yellow)" /> {settings.footer_address}
@@ -255,22 +254,22 @@ export default function Home() {
         </p>
       </motion.footer>
 
-      {/* Sticky Bottom Cart Bar */}
+      {/* Floating Cart Box */}
       <AnimatePresence>
         {totalCartItems > 0 && (
           <motion.div 
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
-            className="sticky-cart-bar"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            className="floating-cart-box"
             onClick={() => setIsCartOpen(true)}
           >
-            <div className="sticky-cart-info">
-              <span className="sticky-cart-qty">{totalCartItems} Item</span>
-              <span className="sticky-cart-price">Rp {totalCartPrice.toLocaleString('id-ID')}</span>
+            <div className="cart-box-info">
+              <span className="cart-box-qty">{totalCartItems} Keranjang</span>
+              <span className="cart-box-price">Rp {totalCartPrice.toLocaleString('id-ID')}</span>
             </div>
-            <div className="sticky-cart-action">
-              <ShoppingCart size={18} /> Lihat Keranjang
+            <div className="cart-box-icon">
+              <ShoppingCart size={20} />
             </div>
           </motion.div>
         )}
