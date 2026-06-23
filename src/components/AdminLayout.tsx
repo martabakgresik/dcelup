@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom'
 import { LayoutDashboard, LayoutList, Tag, Settings, LogOut, Home, Menu as MenuIcon, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import '../../App.css'
+import '../App.css'
 
 export default function AdminLayout() {
   const navigate = useNavigate()
