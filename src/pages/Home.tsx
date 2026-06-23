@@ -66,6 +66,19 @@ export default function Home() {
     return acc
   }, {} as Record<string, MenuItem[]>)
 
+  const handleOrder = (menuName: string, menuPrice: number) => {
+    let phone = settings.whatsapp_number || ''
+    // Format phone number: remove non-digits, replace leading 0 with 62
+    phone = phone.replace(/\D/g, '')
+    if (phone.startsWith('0')) {
+      phone = '62' + phone.substring(1)
+    }
+    
+    const message = `Halo D'CELUP, saya ingin memesan:\n\n*${menuName}*\nHarga: Rp ${menuPrice.toLocaleString('id-ID')}\n\nMohon info untuk ketersediaan dan pengiriman. Terima kasih!`
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+    window.open(url, '_blank')
+  }
+
   return (
     <div className="app-container">
       {/* Hero Section */}
@@ -122,8 +135,19 @@ export default function Home() {
                     <div className="menu-card-category">{item.category}</div>
                     <div className="menu-card-title">{item.name}</div>
                   </div>
-                  <div className="menu-card-price">
-                    Rp {item.price.toLocaleString('id-ID')}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
+                    <div className="menu-card-price" style={{ margin: 0 }}>
+                      Rp {item.price.toLocaleString('id-ID')}
+                    </div>
+                    <button 
+                      onClick={() => handleOrder(item.name, item.price)}
+                      style={{ 
+                        background: '#25D366', color: '#fff', border: 'none', borderRadius: '8px', 
+                        padding: '0.4rem 1rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' 
+                      }}
+                    >
+                      Beli
+                    </button>
                   </div>
                 </div>
               ))}
