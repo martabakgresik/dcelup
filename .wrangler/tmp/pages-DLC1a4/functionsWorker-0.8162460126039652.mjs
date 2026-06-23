@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// ../.wrangler/tmp/bundle-RAepOb/checked-fetch.js
+// ../.wrangler/tmp/bundle-piqwFL/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -66,11 +66,34 @@ var onRequestPost2 = /* @__PURE__ */ __name(async (context) => {
   }
 }, "onRequestPost");
 
+// api/images/[id].ts
+var onRequestGet = /* @__PURE__ */ __name(async (context) => {
+  try {
+    const id = context.params.id;
+    if (!id) {
+      return new Response("Bad Request", { status: 400 });
+    }
+    const object = await context.env.STORAGE.get(id);
+    if (object === null) {
+      return new Response("Not Found", { status: 404 });
+    }
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set("etag", object.httpEtag);
+    headers.set("Cache-Control", "public, max-age=3600");
+    return new Response(object.body, {
+      headers
+    });
+  } catch (err) {
+    return new Response(err.message, { status: 500 });
+  }
+}, "onRequestGet");
+
 // api/menus.ts
 var checkAuth = /* @__PURE__ */ __name((request) => {
   return request.headers.get("Authorization") === "Bearer dcelup-admin-token-123";
 }, "checkAuth");
-var onRequestGet = /* @__PURE__ */ __name(async (context) => {
+var onRequestGet2 = /* @__PURE__ */ __name(async (context) => {
   try {
     const { results } = await context.env.DB.prepare(
       "SELECT * FROM menus ORDER BY id ASC"
@@ -121,7 +144,7 @@ var onRequestDelete = /* @__PURE__ */ __name(async (context) => {
 var checkAuth2 = /* @__PURE__ */ __name((request) => {
   return request.headers.get("Authorization") === "Bearer dcelup-admin-token-123";
 }, "checkAuth");
-var onRequestGet2 = /* @__PURE__ */ __name(async (context) => {
+var onRequestGet3 = /* @__PURE__ */ __name(async (context) => {
   const { results } = await context.env.DB.prepare("SELECT * FROM promos ORDER BY id DESC").all();
   return Response.json({ success: true, data: results });
 }, "onRequestGet");
@@ -151,7 +174,7 @@ var onRequestDelete2 = /* @__PURE__ */ __name(async (context) => {
 }, "onRequestDelete");
 
 // api/settings.ts
-var onRequestGet3 = /* @__PURE__ */ __name(async (context) => {
+var onRequestGet4 = /* @__PURE__ */ __name(async (context) => {
   const { results } = await context.env.DB.prepare("SELECT * FROM settings").all();
   const settingsObj = results.reduce((acc, row) => {
     acc[row.key] = row.value;
@@ -175,6 +198,32 @@ var onRequestPut2 = /* @__PURE__ */ __name(async (context) => {
     return Response.json({ success: false, error: err.message }, { status: 500 });
   }
 }, "onRequestPut");
+
+// api/upload.ts
+var checkAuth3 = /* @__PURE__ */ __name((request) => {
+  return request.headers.get("Authorization") === "Bearer dcelup-admin-token-123";
+}, "checkAuth");
+var onRequestPost5 = /* @__PURE__ */ __name(async (context) => {
+  if (!checkAuth3(context.request)) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const formData = await context.request.formData();
+    const file = formData.get("file");
+    if (!file) {
+      return Response.json({ error: "No file provided" }, { status: 400 });
+    }
+    const ext = file.name.split(".").pop() || "jpg";
+    const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${ext}`;
+    await context.env.STORAGE.put(filename, await file.arrayBuffer(), {
+      httpMetadata: {
+        contentType: file.type || "application/octet-stream"
+      }
+    });
+    const url = `/api/images/${filename}`;
+    return Response.json({ success: true, url });
+  } catch (err) {
+    return Response.json({ success: false, error: err.message }, { status: 500 });
+  }
+}, "onRequestPost");
 
 // api/ping.ts
 var onRequest = /* @__PURE__ */ __name(async (context) => {
@@ -202,6 +251,13 @@ var routes = [
     modules: [onRequestPost2]
   },
   {
+    routePath: "/api/images/:id",
+    mountPath: "/api/images",
+    method: "GET",
+    middlewares: [],
+    modules: [onRequestGet]
+  },
+  {
     routePath: "/api/menus",
     mountPath: "/api",
     method: "DELETE",
@@ -213,7 +269,7 @@ var routes = [
     mountPath: "/api",
     method: "GET",
     middlewares: [],
-    modules: [onRequestGet]
+    modules: [onRequestGet2]
   },
   {
     routePath: "/api/menus",
@@ -241,7 +297,7 @@ var routes = [
     mountPath: "/api",
     method: "GET",
     middlewares: [],
-    modules: [onRequestGet2]
+    modules: [onRequestGet3]
   },
   {
     routePath: "/api/promos",
@@ -255,7 +311,7 @@ var routes = [
     mountPath: "/api",
     method: "GET",
     middlewares: [],
-    modules: [onRequestGet3]
+    modules: [onRequestGet4]
   },
   {
     routePath: "/api/settings",
@@ -263,6 +319,13 @@ var routes = [
     method: "PUT",
     middlewares: [],
     modules: [onRequestPut2]
+  },
+  {
+    routePath: "/api/upload",
+    mountPath: "/api",
+    method: "POST",
+    middlewares: [],
+    modules: [onRequestPost5]
   },
   {
     routePath: "/api/ping",
@@ -760,7 +823,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// ../.wrangler/tmp/bundle-RAepOb/middleware-insertion-facade.js
+// ../.wrangler/tmp/bundle-piqwFL/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -792,7 +855,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// ../.wrangler/tmp/bundle-RAepOb/middleware-loader.entry.ts
+// ../.wrangler/tmp/bundle-piqwFL/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

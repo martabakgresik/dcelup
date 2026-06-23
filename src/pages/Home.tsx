@@ -8,6 +8,7 @@ interface MenuItem {
   category: string;
   name: string;
   price: number;
+  image_url?: string;
 }
 
 interface PromoItem {

@@ -5,6 +5,7 @@ export default function MenuEditor() {
   const [menus, setMenus] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [formData, setFormData] = useState({ id: '', category: '', name: '', price: '', image_url: '/dcelup.jpg' })
   
   const token = localStorage.getItem('admin_token')
@@ -74,6 +75,35 @@ export default function MenuEditor() {
     }
   }
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const uploadData = new FormData()
+    uploadData.append('file', file)
+
+    setIsUploading(true)
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: uploadData
+      })
+      const data = await res.json()
+      if (data.success) {
+        setFormData(prev => ({ ...prev, image_url: data.url }))
+      } else {
+        alert('Gagal mengunggah gambar: ' + data.error)
+      }
+    } catch (err) {
+      alert('Terjadi kesalahan saat mengunggah gambar')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   const handleEditClick = (menu: any) => {
     setFormData({ id: menu.id, category: menu.category, name: menu.name, price: menu.price.toString(), image_url: menu.image_url || '/dcelup.jpg' })
     setIsEditing(true)
@@ -133,17 +163,24 @@ export default function MenuEditor() {
                 required 
               />
             </div>
-            <div className="form-group">
-              <label>Gambar Menu (URL)</label>
-              <input 
-                className="glass-input" 
-                placeholder="Misal: /dcelup.jpg atau https://..." 
-                value={formData.image_url} 
-                onChange={e => setFormData({...formData, image_url: e.target.value})} 
-              />
+            <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <label>Gambar Menu</label>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <img src={formData.image_url} alt="Preview" style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.2)' }} />
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  style={{ color: '#fff' }}
+                  disabled={isUploading}
+                />
+                {isUploading && <span style={{ color: 'var(--accent-yellow)', fontSize: '0.9rem' }}>Mengunggah...</span>}
+              </div>
             </div>
             <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end', gridColumn: '1 / -1' }}>
-              <button type="submit" className="btn-primary" style={{ width: '100%' }}>Simpan Menu</button>
+              <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={isUploading}>
+                {isUploading ? 'Sedang Mengunggah...' : 'Simpan Menu'}
+              </button>
             </div>
           </form>
         </div>

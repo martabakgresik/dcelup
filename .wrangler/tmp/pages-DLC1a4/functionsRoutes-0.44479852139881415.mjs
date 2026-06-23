@@ -1,5 +1,6 @@
 import { onRequestPost as __api_auth_login_ts_onRequestPost } from "E:\\dcelup\\functions\\api\\auth\\login.ts"
 import { onRequestPost as __api_menus_favorite_ts_onRequestPost } from "E:\\dcelup\\functions\\api\\menus\\favorite.ts"
+import { onRequestGet as __api_images__id__ts_onRequestGet } from "E:\\dcelup\\functions\\api\\images\\[id].ts"
 import { onRequestDelete as __api_menus_ts_onRequestDelete } from "E:\\dcelup\\functions\\api\\menus.ts"
 import { onRequestGet as __api_menus_ts_onRequestGet } from "E:\\dcelup\\functions\\api\\menus.ts"
 import { onRequestPost as __api_menus_ts_onRequestPost } from "E:\\dcelup\\functions\\api\\menus.ts"
@@ -9,6 +10,7 @@ import { onRequestGet as __api_promos_ts_onRequestGet } from "E:\\dcelup\\functi
 import { onRequestPost as __api_promos_ts_onRequestPost } from "E:\\dcelup\\functions\\api\\promos.ts"
 import { onRequestGet as __api_settings_ts_onRequestGet } from "E:\\dcelup\\functions\\api\\settings.ts"
 import { onRequestPut as __api_settings_ts_onRequestPut } from "E:\\dcelup\\functions\\api\\settings.ts"
+import { onRequestPost as __api_upload_ts_onRequestPost } from "E:\\dcelup\\functions\\api\\upload.ts"
 import { onRequest as __api_ping_ts_onRequest } from "E:\\dcelup\\functions\\api\\ping.ts"
 
 export const routes = [
@@ -25,6 +27,13 @@ export const routes = [
       method: "POST",
       middlewares: [],
       modules: [__api_menus_favorite_ts_onRequestPost],
+    },
+  {
+      routePath: "/api/images/:id",
+      mountPath: "/api/images",
+      method: "GET",
+      middlewares: [],
+      modules: [__api_images__id__ts_onRequestGet],
     },
   {
       routePath: "/api/menus",
@@ -88,6 +97,13 @@ export const routes = [
       method: "PUT",
       middlewares: [],
       modules: [__api_settings_ts_onRequestPut],
+    },
+  {
+      routePath: "/api/upload",
+      mountPath: "/api",
+      method: "POST",
+      middlewares: [],
+      modules: [__api_upload_ts_onRequestPost],
     },
   {
       routePath: "/api/ping",

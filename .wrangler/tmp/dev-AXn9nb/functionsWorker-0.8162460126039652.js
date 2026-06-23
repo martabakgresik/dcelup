@@ -90,10 +90,31 @@ var onRequestPost2 = /* @__PURE__ */ __name2(async (context) => {
     return Response.json({ success: false, error: err.message }, { status: 500 });
   }
 }, "onRequestPost");
+var onRequestGet = /* @__PURE__ */ __name2(async (context) => {
+  try {
+    const id = context.params.id;
+    if (!id) {
+      return new Response("Bad Request", { status: 400 });
+    }
+    const object = await context.env.STORAGE.get(id);
+    if (object === null) {
+      return new Response("Not Found", { status: 404 });
+    }
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set("etag", object.httpEtag);
+    headers.set("Cache-Control", "public, max-age=3600");
+    return new Response(object.body, {
+      headers
+    });
+  } catch (err) {
+    return new Response(err.message, { status: 500 });
+  }
+}, "onRequestGet");
 var checkAuth = /* @__PURE__ */ __name2((request) => {
   return request.headers.get("Authorization") === "Bearer dcelup-admin-token-123";
 }, "checkAuth");
-var onRequestGet = /* @__PURE__ */ __name2(async (context) => {
+var onRequestGet2 = /* @__PURE__ */ __name2(async (context) => {
   try {
     const { results } = await context.env.DB.prepare(
       "SELECT * FROM menus ORDER BY id ASC"
@@ -142,7 +163,7 @@ var onRequestDelete = /* @__PURE__ */ __name2(async (context) => {
 var checkAuth2 = /* @__PURE__ */ __name2((request) => {
   return request.headers.get("Authorization") === "Bearer dcelup-admin-token-123";
 }, "checkAuth");
-var onRequestGet2 = /* @__PURE__ */ __name2(async (context) => {
+var onRequestGet3 = /* @__PURE__ */ __name2(async (context) => {
   const { results } = await context.env.DB.prepare("SELECT * FROM promos ORDER BY id DESC").all();
   return Response.json({ success: true, data: results });
 }, "onRequestGet");
@@ -170,7 +191,7 @@ var onRequestDelete2 = /* @__PURE__ */ __name2(async (context) => {
     return Response.json({ success: false, error: err.message }, { status: 500 });
   }
 }, "onRequestDelete");
-var onRequestGet3 = /* @__PURE__ */ __name2(async (context) => {
+var onRequestGet4 = /* @__PURE__ */ __name2(async (context) => {
   const { results } = await context.env.DB.prepare("SELECT * FROM settings").all();
   const settingsObj = results.reduce((acc, row) => {
     acc[row.key] = row.value;
@@ -194,6 +215,30 @@ var onRequestPut2 = /* @__PURE__ */ __name2(async (context) => {
     return Response.json({ success: false, error: err.message }, { status: 500 });
   }
 }, "onRequestPut");
+var checkAuth3 = /* @__PURE__ */ __name2((request) => {
+  return request.headers.get("Authorization") === "Bearer dcelup-admin-token-123";
+}, "checkAuth");
+var onRequestPost5 = /* @__PURE__ */ __name2(async (context) => {
+  if (!checkAuth3(context.request)) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const formData = await context.request.formData();
+    const file = formData.get("file");
+    if (!file) {
+      return Response.json({ error: "No file provided" }, { status: 400 });
+    }
+    const ext = file.name.split(".").pop() || "jpg";
+    const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${ext}`;
+    await context.env.STORAGE.put(filename, await file.arrayBuffer(), {
+      httpMetadata: {
+        contentType: file.type || "application/octet-stream"
+      }
+    });
+    const url = `/api/images/${filename}`;
+    return Response.json({ success: true, url });
+  } catch (err) {
+    return Response.json({ success: false, error: err.message }, { status: 500 });
+  }
+}, "onRequestPost");
 var onRequest = /* @__PURE__ */ __name2(async (context) => {
   return Response.json({
     message: "Pong from D'CELUP API!",
@@ -217,6 +262,13 @@ var routes = [
     modules: [onRequestPost2]
   },
   {
+    routePath: "/api/images/:id",
+    mountPath: "/api/images",
+    method: "GET",
+    middlewares: [],
+    modules: [onRequestGet]
+  },
+  {
     routePath: "/api/menus",
     mountPath: "/api",
     method: "DELETE",
@@ -228,7 +280,7 @@ var routes = [
     mountPath: "/api",
     method: "GET",
     middlewares: [],
-    modules: [onRequestGet]
+    modules: [onRequestGet2]
   },
   {
     routePath: "/api/menus",
@@ -256,7 +308,7 @@ var routes = [
     mountPath: "/api",
     method: "GET",
     middlewares: [],
-    modules: [onRequestGet2]
+    modules: [onRequestGet3]
   },
   {
     routePath: "/api/promos",
@@ -270,7 +322,7 @@ var routes = [
     mountPath: "/api",
     method: "GET",
     middlewares: [],
-    modules: [onRequestGet3]
+    modules: [onRequestGet4]
   },
   {
     routePath: "/api/settings",
@@ -278,6 +330,13 @@ var routes = [
     method: "PUT",
     middlewares: [],
     modules: [onRequestPut2]
+  },
+  {
+    routePath: "/api/upload",
+    mountPath: "/api",
+    method: "POST",
+    middlewares: [],
+    modules: [onRequestPost5]
   },
   {
     routePath: "/api/ping",
