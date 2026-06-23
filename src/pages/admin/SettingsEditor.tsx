@@ -129,6 +129,41 @@ export default function SettingsEditor() {
           </div>
         </div>
 
+        {/* Card Tema & Warna */}
+        <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <h3 style={{ margin: 0, borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem' }}>Pengaturan Tema & Warna</h3>
+          
+          <div className="form-group">
+            <label>Warna Utama (Aksen)</label>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <input 
+                type="color" 
+                name="theme_accent_color" 
+                value={settings.theme_accent_color || '#eadc02'} 
+                onChange={handleChange} 
+                style={{ width: '50px', height: '40px', padding: '0', cursor: 'pointer', border: 'none', borderRadius: '4px', background: 'none' }}
+              />
+              <span style={{ fontFamily: 'monospace', color: 'var(--accent-yellow)' }}>{settings.theme_accent_color || '#eadc02'}</span>
+            </div>
+            <small style={{ color: 'var(--text-muted)' }}>Pilih warna utama. Default: #eadc02 (Kuning D'Celup)</small>
+          </div>
+
+          <div className="form-group">
+            <label>Warna Latar Belakang (Background)</label>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <input 
+                type="color" 
+                name="theme_bg_color" 
+                value={settings.theme_bg_color || '#0f0f0f'} 
+                onChange={handleChange} 
+                style={{ width: '50px', height: '40px', padding: '0', cursor: 'pointer', border: 'none', borderRadius: '4px', background: 'none' }}
+              />
+              <span style={{ fontFamily: 'monospace', color: 'var(--text-muted)' }}>{settings.theme_bg_color || '#0f0f0f'}</span>
+            </div>
+            <small style={{ color: 'var(--text-muted)' }}>Pilih warna latar. Default: #0f0f0f (Gelap)</small>
+          </div>
+        </div>
+
         {/* Card Maintenance */}
         <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', alignSelf: 'start' }}>
           <h3 style={{ margin: 0, borderBottom: '1px solid var(--glass-border)', paddingBottom: '1rem', color: '#fca5a5' }}>Mode Maintenance</h3>

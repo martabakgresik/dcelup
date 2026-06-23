@@ -6,10 +6,33 @@ import Dashboard from './pages/admin/Dashboard'
 import MenuEditor from './pages/admin/MenuEditor'
 import PromoEditor from './pages/admin/PromoEditor'
 import SettingsEditor from './pages/admin/SettingsEditor'
+import { useState, useEffect } from 'react'
 
 function App() {
+  const [themeSettings, setThemeSettings] = useState<any>({})
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setThemeSettings(data.data)
+        }
+      })
+      .catch(console.error)
+  }, [])
+
   return (
-    <BrowserRouter>
+    <>
+      <style>
+        {`
+          :root {
+            ${themeSettings.theme_accent_color ? `--accent-yellow: ${themeSettings.theme_accent_color};` : ''}
+            ${themeSettings.theme_bg_color ? `--bg-dark: ${themeSettings.theme_bg_color};` : ''}
+          }
+        `}
+      </style>
+      <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
@@ -23,6 +46,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </>
   )
 }
 
