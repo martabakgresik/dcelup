@@ -28,9 +28,9 @@ body {
   content: '';
   position: fixed;
   border-radius: 50%;
-  filter: blur(120px);
+  filter: blur(180px);
   z-index: -1;
-  opacity: 0.25; /* Increased opacity for better visibility */
+  opacity: 0.08; /* Very soft and subtle */
   pointer-events: none;
 }
 
