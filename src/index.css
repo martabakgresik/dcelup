@@ -8,10 +8,45 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #0f0f0f;
+  background-color: var(--bg-dark, #0f0f0f);
   color: #fff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Aesthetic Background Ornaments */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: -1;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+body::before {
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  min-width: 400px;
+  min-height: 400px;
+  background: var(--accent-yellow, #ffd700);
+}
+
+body::after {
+  bottom: -10%;
+  right: -10%;
+  width: 40vw;
+  height: 40vw;
+  min-width: 300px;
+  min-height: 300px;
+  background: #ffffff;
 }
 
 /* Base custom scrollbar */
