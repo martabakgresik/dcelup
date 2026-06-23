@@ -18,18 +18,23 @@ body {
 }
 
 /* Aesthetic Background Ornaments */
-body::before,
-body::after {
+.app-container {
+  position: relative;
+  z-index: 0;
+}
+
+.app-container::before,
+.app-container::after {
   content: '';
   position: fixed;
   border-radius: 50%;
   filter: blur(120px);
   z-index: -1;
-  opacity: 0.15;
+  opacity: 0.25; /* Increased opacity for better visibility */
   pointer-events: none;
 }
 
-body::before {
+.app-container::before {
   top: -10%;
   left: -10%;
   width: 50vw;
@@ -39,7 +44,7 @@ body::before {
   background: var(--accent-yellow, #ffd700);
 }
 
-body::after {
+.app-container::after {
   bottom: -10%;
   right: -10%;
   width: 40vw;
