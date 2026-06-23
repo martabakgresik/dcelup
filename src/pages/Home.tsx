@@ -231,32 +231,41 @@ export default function Home() {
               
               <div className="menu-grid">
                 {categoryItems.map(item => (
-                  <div key={item.id} className="glass-panel menu-card">
-                    <button 
-                      onClick={() => toggleFavorite(item.id)}
-                      style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', zIndex: 10 }}
-                    >
-                      <Heart size={24} color={favorites.includes(item.id) ? '#ef4444' : '#9ca3af'} fill={favorites.includes(item.id) ? '#ef4444' : 'none'} style={{ transition: 'all 0.2s' }} />
-                    </button>
-                    <div>
-                      <div className="menu-card-category">{item.category}</div>
-                    <div className="menu-card-title">{item.name}</div>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-                    <div className="menu-card-price" style={{ margin: 0 }}>
-                      Rp {item.price.toLocaleString('id-ID')}
+                  <div key={item.id} className="glass-panel menu-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ position: 'relative', width: '100%', height: '180px', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                      <img 
+                        src={item.image_url || '/dcelup.jpg'} 
+                        alt={item.name} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      />
+                      <button 
+                        onClick={() => toggleFavorite(item.id)}
+                        style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.5)', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', zIndex: 10 }}
+                      >
+                        <Heart size={20} color={favorites.includes(item.id) ? '#ef4444' : '#ffffff'} fill={favorites.includes(item.id) ? '#ef4444' : 'none'} style={{ transition: 'all 0.2s' }} />
+                      </button>
                     </div>
-                    <button 
-                      onClick={() => addToCart(item)}
-                      style={{ 
-                        background: 'rgba(255, 215, 0, 0.2)', color: 'var(--accent-yellow)', border: '1px solid rgba(255,215,0,0.5)', borderRadius: '8px', 
-                        padding: '0.4rem 1rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' 
-                      }}
-                    >
-                      <ShoppingCart size={16} /> + Keranjang
-                    </button>
+                    
+                    <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                      <div className="menu-card-category">{item.category}</div>
+                      <div className="menu-card-title">{item.name}</div>
+                      
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '1rem' }}>
+                        <div className="menu-card-price" style={{ margin: 0 }}>
+                          Rp {item.price.toLocaleString('id-ID')}
+                        </div>
+                        <button 
+                          onClick={() => addToCart(item)}
+                          style={{ 
+                            background: 'rgba(255, 215, 0, 0.2)', color: 'var(--accent-yellow)', border: '1px solid rgba(255,215,0,0.5)', borderRadius: '8px', 
+                            padding: '0.4rem 1rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' 
+                          }}
+                        >
+                          <ShoppingCart size={16} /> + Keranjang
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
               ))}
             </div>
           </motion.div>

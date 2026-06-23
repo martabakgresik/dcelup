@@ -5,7 +5,7 @@ export default function MenuEditor() {
   const [menus, setMenus] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const [formData, setFormData] = useState({ id: '', category: '', name: '', price: '' })
+  const [formData, setFormData] = useState({ id: '', category: '', name: '', price: '', image_url: '/dcelup.jpg' })
   
   const token = localStorage.getItem('admin_token')
 
@@ -38,13 +38,14 @@ export default function MenuEditor() {
           id: formData.id,
           category: formData.category,
           name: formData.name,
-          price: parseInt(formData.price)
+          price: parseInt(formData.price),
+          image_url: formData.image_url
         })
       })
       const data = await res.json()
       if (data.success) {
         setIsEditing(false)
-        setFormData({ id: '', category: '', name: '', price: '' })
+        setFormData({ id: '', category: '', name: '', price: '', image_url: '/dcelup.jpg' })
         fetchMenus()
       } else {
         alert(data.error)
@@ -74,7 +75,7 @@ export default function MenuEditor() {
   }
 
   const handleEditClick = (menu: any) => {
-    setFormData({ id: menu.id, category: menu.category, name: menu.name, price: menu.price.toString() })
+    setFormData({ id: menu.id, category: menu.category, name: menu.name, price: menu.price.toString(), image_url: menu.image_url || '/dcelup.jpg' })
     setIsEditing(true)
   }
 
@@ -95,7 +96,7 @@ export default function MenuEditor() {
         <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', background: 'rgba(0,0,0,0.4)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h4 style={{ margin: 0, color: 'var(--accent-yellow)' }}>{formData.id ? 'Edit Menu' : 'Tambah Menu Baru'}</h4>
-            <button onClick={() => { setIsEditing(false); setFormData({ id: '', category: '', name: '', price: '' }) }} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>
+            <button onClick={() => { setIsEditing(false); setFormData({ id: '', category: '', name: '', price: '', image_url: '/dcelup.jpg' }) }} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>
               <X size={20} />
             </button>
           </div>
@@ -132,7 +133,16 @@ export default function MenuEditor() {
                 required 
               />
             </div>
-            <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <div className="form-group">
+              <label>Gambar Menu (URL)</label>
+              <input 
+                className="glass-input" 
+                placeholder="Misal: /dcelup.jpg atau https://..." 
+                value={formData.image_url} 
+                onChange={e => setFormData({...formData, image_url: e.target.value})} 
+              />
+            </div>
+            <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end', gridColumn: '1 / -1' }}>
               <button type="submit" className="btn-primary" style={{ width: '100%' }}>Simpan Menu</button>
             </div>
           </form>
@@ -145,6 +155,7 @@ export default function MenuEditor() {
             <tr>
               <th>ID</th>
               <th>Kategori</th>
+              <th>Gambar</th>
               <th>Nama</th>
               <th>Harga</th>
               <th style={{ textAlign: 'center' }}>Disukai</th>
@@ -159,6 +170,9 @@ export default function MenuEditor() {
                 <tr key={menu.id}>
                   <td>{menu.id}</td>
                   <td><span style={{ background: 'rgba(255,215,0,0.1)', color: 'var(--accent-yellow)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>{menu.category}</span></td>
+                  <td>
+                    <img src={menu.image_url || '/dcelup.jpg'} alt={menu.name} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+                  </td>
                   <td style={{ fontWeight: 600 }}>{menu.name}</td>
                   <td>Rp. {menu.price.toLocaleString('id-ID')}</td>
                   <td style={{ textAlign: 'center', color: '#fca5a5' }}>
