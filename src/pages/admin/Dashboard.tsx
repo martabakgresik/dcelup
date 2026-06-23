@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { LogOut, Settings as SettingsIcon, LayoutList, Tag } from 'lucide-react'
+import { motion } from 'framer-motion'
+import MenuEditor from './MenuEditor'
+import PromoEditor from './PromoEditor'
 import '../../App.css'
 
 export default function Dashboard() {
+  const [activeTab, setActiveTab] = useState<'settings' | 'menus' | 'promos'>('settings')
   const [settings, setSettings] = useState<any>({})
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
@@ -42,6 +47,7 @@ export default function Dashboard() {
       const data = await res.json()
       if (data.success) {
         setMessage('Pengaturan berhasil disimpan!')
+        setTimeout(() => setMessage(''), 3000)
       } else {
         setMessage('Gagal: ' + data.error)
       }
@@ -54,49 +60,112 @@ export default function Dashboard() {
     setSettings({ ...settings, [e.target.name]: e.target.value })
   }
 
-  if (loading) return <div className="app-container"><p>Loading Dashboard...</p></div>
+  if (loading) return <div className="app-container"><p style={{ textAlign: 'center' }}>Loading Dashboard...</p></div>
 
   return (
-    <div className="app-container" style={{ backgroundColor: '#fff', color: '#333', padding: '2rem', borderRadius: '8px' }}>
-      <h2>Dashboard Admin</h2>
-      <button onClick={() => { localStorage.removeItem('admin_token'); navigate('/') }} style={{ marginBottom: '2rem' }}>Logout</button>
-      
-      <h3>Pengaturan Tampilan & Maintenance</h3>
-      {message && <p style={{ backgroundColor: '#eee', padding: '10px' }}>{message}</p>}
-      
-      <form onSubmit={handleSaveSettings} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <label>Judul Header</label>
-        <input name="header_title" value={settings.header_title || ''} onChange={handleChange} />
-        
-        <label>Sub-Judul Header</label>
-        <input name="header_subtitle" value={settings.header_subtitle || ''} onChange={handleChange} />
-        
-        <label>Slogan Header</label>
-        <input name="header_slogan" value={settings.header_slogan || ''} onChange={handleChange} />
-
-        <label>Alamat Footer</label>
-        <input name="footer_address" value={settings.footer_address || ''} onChange={handleChange} />
-
-        <label>Nomor WhatsApp</label>
-        <input name="whatsapp_number" value={settings.whatsapp_number || ''} onChange={handleChange} />
-
-        <label>Mode Maintenance?</label>
-        <select name="is_maintenance" value={settings.is_maintenance || 'false'} onChange={handleChange}>
-          <option value="false">Tidak (Aktif)</option>
-          <option value="true">Ya (Sedang Perbaikan)</option>
-        </select>
-
-        <label>Pesan Maintenance</label>
-        <input name="maintenance_message" value={settings.maintenance_message || ''} onChange={handleChange} />
-
-        <button type="submit" style={{ padding: '10px', marginTop: '1rem', backgroundColor: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer' }}>
-          Simpan Pengaturan
+    <div className="app-container">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}
+      >
+        <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2.5rem', margin: 0 }}>D'CELUP Admin</h2>
+        <button 
+          onClick={() => { localStorage.removeItem('admin_token'); navigate('/admin/login') }} 
+          className="btn-danger"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+        >
+          <LogOut size={18} /> Logout
         </button>
-      </form>
-
-      <hr style={{ margin: '2rem 0' }}/>
+      </motion.div>
       
-      <p><i>Catatan: Fitur tambah/edit menu dan promo dapat dibangun dengan struktur antarmuka yang serupa di dashboard ini.</i></p>
+      <div className="tabs-container">
+        <button 
+          className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
+          onClick={() => setActiveTab('settings')}
+        >
+          <SettingsIcon size={18} style={{ verticalAlign: 'middle', marginRight: '8px' }} /> Pengaturan Umum
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'menus' ? 'active' : ''}`}
+          onClick={() => setActiveTab('menus')}
+        >
+          <LayoutList size={18} style={{ verticalAlign: 'middle', marginRight: '8px' }} /> Manajemen Menu
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'promos' ? 'active' : ''}`}
+          onClick={() => setActiveTab('promos')}
+        >
+          <Tag size={18} style={{ verticalAlign: 'middle', marginRight: '8px' }} /> Manajemen Promo
+        </button>
+      </div>
+
+      <motion.div 
+        key={activeTab}
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+        className="glass-panel" 
+        style={{ padding: '2rem' }}
+      >
+        {activeTab === 'settings' && (
+          <div>
+            <h3 style={{ marginBottom: '1.5rem', color: 'var(--accent-yellow)' }}>Pengaturan Tampilan & Maintenance</h3>
+            {message && <p style={{ backgroundColor: 'rgba(76, 175, 80, 0.2)', color: '#a7f3d0', padding: '10px', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid rgba(76, 175, 80, 0.5)' }}>{message}</p>}
+            
+            <form onSubmit={handleSaveSettings} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div className="form-group">
+                <label>Judul Header</label>
+                <input className="glass-input" name="header_title" value={settings.header_title || ''} onChange={handleChange} />
+              </div>
+              
+              <div className="form-group">
+                <label>Sub-Judul Header</label>
+                <input className="glass-input" name="header_subtitle" value={settings.header_subtitle || ''} onChange={handleChange} />
+              </div>
+              
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label>Slogan Header</label>
+                <input className="glass-input" name="header_slogan" value={settings.header_slogan || ''} onChange={handleChange} />
+              </div>
+
+              <div className="form-group">
+                <label>Alamat Footer</label>
+                <input className="glass-input" name="footer_address" value={settings.footer_address || ''} onChange={handleChange} />
+              </div>
+
+              <div className="form-group">
+                <label>Nomor WhatsApp</label>
+                <input className="glass-input" name="whatsapp_number" value={settings.whatsapp_number || ''} onChange={handleChange} />
+              </div>
+
+              <div className="form-group">
+                <label>Mode Maintenance?</label>
+                <select className="glass-input" name="is_maintenance" value={settings.is_maintenance || 'false'} onChange={handleChange} style={{ cursor: 'pointer' }}>
+                  <option value="false" style={{ color: '#000' }}>Tidak (Aktif)</option>
+                  <option value="true" style={{ color: '#000' }}>Ya (Sedang Perbaikan)</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Pesan Maintenance</label>
+                <input className="glass-input" name="maintenance_message" value={settings.maintenance_message || ''} onChange={handleChange} />
+              </div>
+
+              <div style={{ gridColumn: '1 / -1', marginTop: '1rem' }}>
+                <button type="submit" className="btn-primary" style={{ width: '100%' }}>
+                  SIMPAN PENGATURAN
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {activeTab === 'menus' && <MenuEditor />}
+        
+        {activeTab === 'promos' && <PromoEditor />}
+        
+      </motion.div>
     </div>
   )
 }
