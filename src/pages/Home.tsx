@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Tag, MapPin, Phone } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Tag, MapPin, Phone, ShoppingCart, Plus, Minus, X, Trash2, Heart } from 'lucide-react'
 import '../App.css'
 
 interface MenuItem {
@@ -25,8 +25,21 @@ export default function Home() {
   const [settings, setSettings] = useState<any>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  
+  // Cart State
+  const [cartItems, setCartItems] = useState<(MenuItem & { quantity: number })[]>([])
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  
+  // Favorites State
+  const [favorites, setFavorites] = useState<number[]>([])
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
 
   useEffect(() => {
+    const savedFavs = localStorage.getItem('dcelup_favorites')
+    if (savedFavs) {
+      setFavorites(JSON.parse(savedFavs))
+    }
+
     Promise.all([
       fetch('/api/menus').then(res => res.json()),
       fetch('/api/promos').then(res => res.json()),
@@ -66,18 +79,61 @@ export default function Home() {
     return acc
   }, {} as Record<string, MenuItem[]>)
 
-  const handleOrder = (menuName: string, menuPrice: number) => {
+  const toggleFavorite = (id: number) => {
+    setFavorites(prev => {
+      const isFav = prev.includes(id)
+      const newFavs = isFav ? prev.filter(f => f !== id) : [...prev, id]
+      localStorage.setItem('dcelup_favorites', JSON.stringify(newFavs))
+      return newFavs
+    })
+  }
+
+  const addToCart = (item: MenuItem) => {
+    setCartItems(prev => {
+      const existing = prev.find(i => i.id === item.id)
+      if (existing) {
+        return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)
+      }
+      return [...prev, { ...item, quantity: 1 }]
+    })
+  }
+
+  const updateQuantity = (id: number, delta: number) => {
+    setCartItems(prev => prev.map(i => {
+      if (i.id === id) {
+        const newQty = Math.max(0, i.quantity + delta)
+        return { ...i, quantity: newQty }
+      }
+      return i
+    }).filter(i => i.quantity > 0))
+  }
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) return
+
     let phone = settings.whatsapp_number || ''
-    // Format phone number: remove non-digits, replace leading 0 with 62
     phone = phone.replace(/\D/g, '')
     if (phone.startsWith('0')) {
       phone = '62' + phone.substring(1)
     }
     
-    const message = `Halo D'CELUP, saya ingin memesan:\n\n*${menuName}*\nHarga: Rp ${menuPrice.toLocaleString('id-ID')}\n\nMohon info untuk ketersediaan dan pengiriman. Terima kasih!`
+    let message = `Halo D'CELUP, saya ingin memesan:\n\n`
+    let total = 0
+    
+    cartItems.forEach(item => {
+      const subtotal = item.price * item.quantity
+      total += subtotal
+      message += `- ${item.quantity}x ${item.name} (Rp ${subtotal.toLocaleString('id-ID')})\n`
+    })
+    
+    message += `\n*Total Pesanan: Rp ${total.toLocaleString('id-ID')}*\n\nMohon info ketersediaan dan pengiriman. Terima kasih!`
+    
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
     window.open(url, '_blank')
   }
+
+  const totalCartItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+  const totalCartPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 
   return (
     <div className="app-container">
@@ -116,23 +172,50 @@ export default function Home() {
       <main>
         {error && <p style={{ color: '#fca5a5', textAlign: 'center' }}>Error: {error}</p>}
         
-        {Object.keys(categories).map((category, index) => (
-          <motion.div 
-            key={category}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
-            <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-yellow)', marginBottom: '1.5rem', fontFamily: 'Outfit, sans-serif' }}>
-              {category}
-            </h3>
-            
-            <div className="menu-grid">
-              {categories[category].map(item => (
-                <div key={item.id} className="glass-panel menu-card">
-                  <div>
-                    <div className="menu-card-category">{item.category}</div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', padding: '0.3rem' }}>
+            <button 
+              onClick={() => setShowFavoritesOnly(false)}
+              style={{ background: !showFavoritesOnly ? 'var(--accent-yellow)' : 'transparent', color: !showFavoritesOnly ? '#1a1a1a' : '#fff', border: 'none', padding: '0.5rem 1.5rem', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
+            >
+              Semua Menu
+            </button>
+            <button 
+              onClick={() => setShowFavoritesOnly(true)}
+              style={{ background: showFavoritesOnly ? 'var(--accent-yellow)' : 'transparent', color: showFavoritesOnly ? '#1a1a1a' : '#fff', border: 'none', padding: '0.5rem 1.5rem', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <Heart size={16} fill={showFavoritesOnly ? '#1a1a1a' : 'none'} /> Favorit Saya
+            </button>
+          </div>
+        </div>
+
+        {Object.keys(categories).map((category, index) => {
+          const categoryItems = categories[category].filter(item => showFavoritesOnly ? favorites.includes(item.id) : true)
+          if (categoryItems.length === 0) return null
+
+          return (
+            <motion.div 
+              key={category}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-yellow)', marginBottom: '1.5rem', fontFamily: 'Outfit, sans-serif' }}>
+                {category}
+              </h3>
+              
+              <div className="menu-grid">
+                {categoryItems.map(item => (
+                  <div key={item.id} className="glass-panel menu-card">
+                    <button 
+                      onClick={() => toggleFavorite(item.id)}
+                      style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', zIndex: 10 }}
+                    >
+                      <Heart size={24} color={favorites.includes(item.id) ? '#ef4444' : '#9ca3af'} fill={favorites.includes(item.id) ? '#ef4444' : 'none'} style={{ transition: 'all 0.2s' }} />
+                    </button>
+                    <div>
+                      <div className="menu-card-category">{item.category}</div>
                     <div className="menu-card-title">{item.name}</div>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
@@ -140,20 +223,21 @@ export default function Home() {
                       Rp {item.price.toLocaleString('id-ID')}
                     </div>
                     <button 
-                      onClick={() => handleOrder(item.name, item.price)}
+                      onClick={() => addToCart(item)}
                       style={{ 
-                        background: '#25D366', color: '#fff', border: 'none', borderRadius: '8px', 
+                        background: 'rgba(255, 215, 0, 0.2)', color: 'var(--accent-yellow)', border: '1px solid rgba(255,215,0,0.5)', borderRadius: '8px', 
                         padding: '0.4rem 1rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem' 
                       }}
                     >
-                      Beli
+                      <ShoppingCart size={16} /> + Keranjang
                     </button>
                   </div>
                 </div>
               ))}
             </div>
           </motion.div>
-        ))}
+          )
+        })}
       </main>
 
       <motion.footer 
@@ -169,6 +253,83 @@ export default function Home() {
           <Phone size={16} color="var(--accent-yellow)" /> Order via WhatsApp: {settings.whatsapp_number}
         </p>
       </motion.footer>
+
+      {/* Floating Cart Button */}
+      {totalCartItems > 0 && (
+        <motion.button 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="floating-cart-btn"
+          onClick={() => setIsCartOpen(true)}
+        >
+          <ShoppingCart size={24} />
+          <div className="cart-badge">{totalCartItems}</div>
+        </motion.button>
+      )}
+
+      {/* Cart Drawer */}
+      <AnimatePresence>
+        {isCartOpen && (
+          <div className="cart-overlay" onClick={() => setIsCartOpen(false)}>
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="cart-drawer"
+              onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
+            >
+              <div className="cart-header">
+                <h3 style={{ margin: 0, fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <ShoppingCart size={24} color="var(--accent-yellow)" /> Keranjang
+                </h3>
+                <button onClick={() => setIsCartOpen(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div style={{ flex: 1, overflowY: 'auto' }}>
+                {cartItems.length === 0 ? (
+                  <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginTop: '2rem' }}>Keranjang masih kosong.</p>
+                ) : (
+                  cartItems.map(item => (
+                    <div key={item.id} className="cart-item">
+                      <div className="cart-item-info">
+                        <div className="cart-item-title">{item.name}</div>
+                        <div className="cart-item-price">Rp {(item.price * item.quantity).toLocaleString('id-ID')}</div>
+                      </div>
+                      <div className="cart-item-controls">
+                        <button className="qty-btn" onClick={() => updateQuantity(item.id, -1)}>
+                          {item.quantity === 1 ? <Trash2 size={14} color="#ef4444" /> : <Minus size={14} />}
+                        </button>
+                        <span style={{ minWidth: '20px', textAlign: 'center', fontSize: '0.9rem' }}>{item.quantity}</span>
+                        <button className="qty-btn" onClick={() => updateQuantity(item.id, 1)}>
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="cart-footer">
+                <div className="cart-total">
+                  <span>Total:</span>
+                  <span style={{ color: 'var(--accent-yellow)' }}>Rp {totalCartPrice.toLocaleString('id-ID')}</span>
+                </div>
+                <button 
+                  className="btn-whatsapp" 
+                  onClick={handleCheckout}
+                  disabled={cartItems.length === 0}
+                  style={{ opacity: cartItems.length === 0 ? 0.5 : 1 }}
+                >
+                  <ShoppingCart size={20} /> Checkout ke WhatsApp
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
