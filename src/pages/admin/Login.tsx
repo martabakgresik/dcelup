@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Lock, User } from 'lucide-react'
+import { useNavigate, Link } from 'react-router-dom'
+import { Eye, EyeOff, Lock, User, Home as HomeIcon } from 'lucide-react'
 import { motion } from 'framer-motion'
 import '../../App.css'
 
@@ -80,6 +80,12 @@ export default function Login() {
             {loading ? 'MEMPROSES...' : 'MASUK KE DASHBOARD'}
           </button>
         </form>
+
+        <div style={{ marginTop: '1.5rem' }}>
+          <Link to="/" className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', width: '100%', justifyContent: 'center' }}>
+            <HomeIcon size={18} /> Kembali ke Beranda
+          </Link>
+        </div>
 
         {error && (
           <motion.div 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { LogOut, Settings as SettingsIcon, LayoutList, Tag } from 'lucide-react'
+import { useNavigate, Link } from 'react-router-dom'
+import { LogOut, Settings as SettingsIcon, LayoutList, Tag, Home as HomeIcon } from 'lucide-react'
 import { motion } from 'framer-motion'
 import MenuEditor from './MenuEditor'
 import PromoEditor from './PromoEditor'
@@ -67,16 +67,21 @@ export default function Dashboard() {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}
       >
         <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2.5rem', margin: 0 }}>D'CELUP Admin</h2>
-        <button 
-          onClick={() => { localStorage.removeItem('admin_token'); navigate('/admin/login') }} 
-          className="btn-danger"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          <LogOut size={18} /> Logout
-        </button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Link to="/" className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+            <HomeIcon size={18} /> Ke Beranda
+          </Link>
+          <button 
+            onClick={() => { localStorage.removeItem('admin_token'); navigate('/admin/login') }} 
+            className="btn-danger"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <LogOut size={18} /> Logout
+          </button>
+        </div>
       </motion.div>
       
       <div className="tabs-container">
