@@ -1,13 +1,13 @@
+import { verifyAuth } from '../_shared/auth';
+
 interface Env {
   STORAGE: R2Bucket;
+  JWT_SECRET?: string;
 }
 
-const checkAuth = (request: Request) => {
-  return request.headers.get('Authorization') === 'Bearer dcelup-admin-token-123';
-};
-
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  if (!checkAuth(context.request)) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  const isAuth = await verifyAuth(context.request, context.env.JWT_SECRET || 'fallback-secret-for-dev');
+  if (!isAuth) return Response.json({ error: 'Unauthorized' }, { status: 401 });
   
   try {
     const formData = await context.request.formData();
@@ -15,6 +15,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     
     if (!file) {
       return Response.json({ error: 'No file provided' }, { status: 400 });
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      return Response.json({ error: 'Invalid file type. Only images are allowed.' }, { status: 400 });
+    }
+
+    // Validate file size (max 5MB)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      return Response.json({ error: 'File size exceeds 5MB limit.' }, { status: 400 });
     }
 
     // Generate a unique filename using timestamp and a random string

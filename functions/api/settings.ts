@@ -1,5 +1,8 @@
+import { verifyAuth } from '../_shared/auth';
+
 interface Env {
   DB: D1Database;
+  JWT_SECRET?: string;
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -13,9 +16,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 };
 
 export const onRequestPut: PagesFunction<Env> = async (context) => {
-  // Simple auth check
-  const authHeader = context.request.headers.get('Authorization');
-  if (authHeader !== 'Bearer dcelup-admin-token-123') {
+  const isAuth = await verifyAuth(context.request, context.env.JWT_SECRET || 'fallback-secret-for-dev');
+  if (!isAuth) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
