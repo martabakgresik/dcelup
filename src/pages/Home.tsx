@@ -154,7 +154,7 @@ export default function Home() {
         className="hero-section"
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.2rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-          <img src="/dcelup.jpg" alt="D'Celup Logo" style={{ width: '85px', height: '85px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--accent-yellow)', boxShadow: '0 8px 20px rgba(0,0,0,0.4)' }} />
+          <img src="/dcelup.jpg" alt="D'Celup Logo" style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--accent-yellow)', boxShadow: '0 8px 20px rgba(0,0,0,0.4)' }} />
           <h1 className="hero-title" style={{ margin: 0 }}>{settings.header_title || "D'CELUP"}</h1>
         </div>
         <h2 className="hero-subtitle">{settings.header_subtitle || "CHICKEN CRISPY"}</h2>

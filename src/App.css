@@ -148,8 +148,9 @@ body, html {
 .hero-slogan {
   font-size: 1.1rem;
   color: #d1d5db;
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
+  letter-spacing: 1.5px;
 }
 
 /* Bento Grid for Menu */
