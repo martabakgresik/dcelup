@@ -79,11 +79,19 @@ export default function Home() {
     return acc
   }, {} as Record<string, MenuItem[]>)
 
-  const toggleFavorite = (id: number) => {
+  const toggleFavorite = async (id: number) => {
     setFavorites(prev => {
       const isFav = prev.includes(id)
       const newFavs = isFav ? prev.filter(f => f !== id) : [...prev, id]
       localStorage.setItem('dcelup_favorites', JSON.stringify(newFavs))
+      
+      // Send update to server (fire and forget)
+      fetch('/api/menus/favorite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, action: isFav ? 'remove' : 'add' })
+      }).catch(console.error);
+
       return newFavs
     })
   }
@@ -170,6 +178,8 @@ export default function Home() {
           ))}
         </motion.div>
       )}
+
+
 
       {/* Menu Section */}
       <main>
@@ -341,6 +351,13 @@ export default function Home() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Footer */}
+      <footer style={{ textAlign: 'center', padding: '2rem 0', marginTop: 'auto', borderTop: '1px solid var(--glass-border)', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+        <p>
+          design by <a href="https://ariftirtana.my.id" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-yellow)', textDecoration: 'none', fontWeight: 'bold' }}>arif tirtana</a>
+        </p>
+      </footer>
     </div>
   )
 }

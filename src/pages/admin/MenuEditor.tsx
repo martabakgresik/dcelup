@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Edit2, Trash2, X } from 'lucide-react'
+import { Plus, Edit2, Trash2, X, Heart } from 'lucide-react'
 
 export default function MenuEditor() {
   const [menus, setMenus] = useState<any[]>([])
@@ -147,6 +147,7 @@ export default function MenuEditor() {
               <th>Kategori</th>
               <th>Nama</th>
               <th>Harga</th>
+              <th style={{ textAlign: 'center' }}>Disukai</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -160,6 +161,11 @@ export default function MenuEditor() {
                   <td><span style={{ background: 'rgba(255,215,0,0.1)', color: 'var(--accent-yellow)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>{menu.category}</span></td>
                   <td style={{ fontWeight: 600 }}>{menu.name}</td>
                   <td>Rp. {menu.price.toLocaleString('id-ID')}</td>
+                  <td style={{ textAlign: 'center', color: '#fca5a5' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                      <Heart size={14} fill="currentColor" /> {menu.favorites_count || 0}
+                    </div>
+                  </td>
                   <td>
                     <div className="action-buttons">
                       <button className="btn-secondary" onClick={() => handleEditClick(menu)} title="Edit"><Edit2 size={16} /></button>
