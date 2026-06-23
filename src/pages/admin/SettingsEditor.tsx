@@ -191,6 +191,20 @@ export default function SettingsEditor() {
               style={{ resize: 'vertical' }}
             />
           </div>
+
+          <div className="form-group">
+            <label>Batas Waktu Perbaikan (Opsional)</label>
+            <input 
+              type="datetime-local" 
+              className="glass-input" 
+              name="maintenance_end_time" 
+              value={settings.maintenance_end_time || ''} 
+              onChange={handleChange} 
+            />
+            <small style={{ color: 'var(--text-muted)', display: 'block', marginTop: '0.5rem' }}>
+              Jika diisi, website akan menampilkan hitung mundur (countdown) hingga waktu ini.
+            </small>
+          </div>
         </div>
 
         <div style={{ gridColumn: '1 / -1', marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>

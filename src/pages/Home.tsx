@@ -21,6 +21,58 @@ interface PromoItem {
   is_active: number;
 }
 
+const MaintenanceCountdown = ({ endTime }: { endTime: string }) => {
+  const [timeLeft, setTimeLeft] = useState<{days: number, hours: number, minutes: number, seconds: number} | null>(null)
+
+  useEffect(() => {
+    if (!endTime) return
+
+    const targetDate = new Date(endTime).getTime()
+    
+    const interval = setInterval(() => {
+      const now = new Date().getTime()
+      const distance = targetDate - now
+
+      if (distance < 0) {
+        clearInterval(interval)
+        setTimeLeft(null)
+        return
+      }
+
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [endTime])
+
+  if (!timeLeft) return null
+
+  return (
+    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem' }}>
+      {[
+        { label: 'Hari', value: timeLeft.days },
+        { label: 'Jam', value: timeLeft.hours },
+        { label: 'Menit', value: timeLeft.minutes },
+        { label: 'Detik', value: timeLeft.seconds }
+      ].map((item, i) => (
+        <div key={i} style={{ background: 'rgba(255,255,255,0.1)', padding: '1rem', borderRadius: '12px', minWidth: '80px', border: '1px solid var(--glass-border)' }}>
+          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--accent-yellow)', fontFamily: 'Outfit, sans-serif' }}>
+            {item.value.toString().padStart(2, '0')}
+          </div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '0.2rem' }}>
+            {item.label}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function Home() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([])
   const [promos, setPromos] = useState<PromoItem[]>([])
@@ -49,7 +101,24 @@ export default function Home() {
     ]).then(([menusData, promosData, settingsData]) => {
       if (menusData.success) setMenuItems(menusData.data)
       if (promosData.success) setPromos(promosData.data.filter((p: any) => p.is_active === 1))
-      if (settingsData.success) setSettings(settingsData.data)
+      if (settingsData.success) {
+        setSettings(settingsData.data)
+        
+        // Dynamic SEO Update
+        const siteTitle = settingsData.data.header_title || "D'CELUP"
+        const siteSubtitle = settingsData.data.header_subtitle || "Chicken Crispy"
+        document.title = `${siteTitle} - ${siteSubtitle}`
+        
+        const metaDesc = document.querySelector('meta[name="description"]')
+        if (metaDesc) {
+          metaDesc.setAttribute('content', settingsData.data.header_slogan || "Lezatnya Ayam Crispy Berbalut Saus Pilihan")
+        } else {
+          const meta = document.createElement('meta')
+          meta.name = 'description'
+          meta.content = settingsData.data.header_slogan || "Lezatnya Ayam Crispy Berbalut Saus Pilihan"
+          document.head.appendChild(meta)
+        }
+      }
     }).catch(err => {
       setError(err.message)
     }).finally(() => setLoading(false))
@@ -65,11 +134,30 @@ export default function Home() {
 
   if (settings.is_maintenance === 'true') {
     return (
-      <div className="app-container" style={{ textAlign: 'center', justifyContent: 'center' }}>
-        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-panel" style={{ padding: '4rem 2rem' }}>
+      <div className="app-container" style={{ textAlign: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-panel" style={{ padding: '4rem 2rem', maxWidth: '600px', width: '100%', margin: '0 auto' }}>
           <h1 className="hero-title">{settings.header_title || "D'CELUP"}</h1>
           <h2 style={{ color: 'var(--accent-yellow)', margin: '1rem 0' }}>SEDANG DALAM PERBAIKAN</h2>
-          <p style={{ color: 'var(--text-muted)' }}>{settings.maintenance_message}</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: '1.6' }}>{settings.maintenance_message || "Maaf, website kami sedang dalam proses pemeliharaan rutin. Silakan kembali beberapa saat lagi."}</p>
+          
+          {settings.maintenance_end_time && (
+            <MaintenanceCountdown endTime={settings.maintenance_end_time} />
+          )}
+
+          {settings.whatsapp_number && (
+            <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--glass-border)' }}>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Ada pertanyaan atau keperluan mendesak?</p>
+              <a 
+                href={`https://wa.me/${settings.whatsapp_number.replace(/\D/g, '').replace(/^0/, '62')}?text=${encodeURIComponent("Halo, saya ingin bertanya terkait website yang sedang maintenance...")}`}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hero-wa-btn"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#fff', fontSize: '1rem', textDecoration: 'none', fontWeight: 600, background: '#128C7E', padding: '0.8rem 1.5rem', borderRadius: '30px', transition: 'all 0.2s', boxShadow: '0 4px 15px rgba(18,140,126,0.3)' }}
+              >
+                <Phone size={18} /> Hubungi WhatsApp Kami
+              </a>
+            </div>
+          )}
         </motion.div>
       </div>
     )
