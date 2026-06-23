@@ -165,6 +165,26 @@ export default function Home() {
           </div>
         </div>
         <p className="hero-slogan">{settings.header_slogan || "LEZATNYA AYAM CRISPY BERBALUT SAUS PILIHAN"}</p>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem', marginTop: '1.5rem', background: 'rgba(0,0,0,0.3)', padding: '1rem 2rem', borderRadius: '16px', border: '1px solid var(--glass-border)' }}>
+          {settings.footer_address && (
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#e2e8f0', fontSize: '0.9rem', textAlign: 'left', maxWidth: '400px' }}>
+              <MapPin size={16} color="var(--accent-yellow)" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <span style={{ whiteSpace: 'pre-wrap' }}>{settings.footer_address}</span>
+            </div>
+          )}
+          {settings.whatsapp_number && (
+            <a 
+              href={`https://wa.me/${settings.whatsapp_number.replace(/\D/g, '').replace(/^0/, '62')}?text=${encodeURIComponent("Halo D'CELUP, saya ingin memesan...")}`}
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hero-wa-btn"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff', fontSize: '1rem', textDecoration: 'none', fontWeight: 600, background: '#128C7E', padding: '0.6rem 1.2rem', borderRadius: '30px', transition: 'all 0.2s', marginTop: '0.5rem', boxShadow: '0 4px 12px rgba(18,140,126,0.3)' }}
+            >
+              <Phone size={16} /> Order via WhatsApp: {settings.whatsapp_number}
+            </a>
+          )}
+        </div>
       </motion.header>
 
       {/* Promos Section */}
@@ -274,19 +294,6 @@ export default function Home() {
         })}
       </main>
 
-      <motion.footer 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        className="footer"
-      >
-        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-          <MapPin size={16} color="var(--accent-yellow)" /> {settings.footer_address}
-        </p>
-        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-          <Phone size={16} color="var(--accent-yellow)" /> Order via WhatsApp: {settings.whatsapp_number}
-        </p>
-      </motion.footer>
 
       {/* Floating Cart Box */}
       <AnimatePresence>

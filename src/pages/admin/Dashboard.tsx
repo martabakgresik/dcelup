@@ -53,7 +53,6 @@ export default function Dashboard() {
         <StatCard title="Total Menu" value={stats.menus} icon={<LayoutList size={28} />} color="255, 215, 0" delay={0.1} />
         <StatCard title="Promo Aktif" value={stats.promos} icon={<Tag size={28} />} color="239, 68, 68" delay={0.2} />
         <StatCard title="Pengunjung" value="-" icon={<Users size={28} />} color="59, 130, 246" delay={0.3} />
-        <StatCard title="Penjualan (Dummy)" value="Rp 0" icon={<TrendingUp size={28} />} color="16, 185, 129" delay={0.4} />
       </div>
 
       <div className="glass-panel" style={{ padding: '2rem' }}>
